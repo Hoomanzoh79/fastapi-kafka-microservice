@@ -33,6 +33,7 @@ services:
       retries: 15
     networks:
       - my_network
+      
   microservice1:
     container_name: microservice1
     build: ./microservice1
