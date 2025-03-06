@@ -1,42 +1,62 @@
 services:
-  zookeeper:
-    image: bitnami/zookeeper:latest
+  kafka-ui:
+    image: provectuslabs/kafka-ui
+    container_name: kafka-ui
+    ports:
+      - "8080:8080"
+    restart: always
+    environment:
+      - KAFKA_CLUSTERS_0_NAME=local
+      - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=kafka:29092
+    networks:
+      - my_network
+  kafka:
+    image: obsidiandynamics/kafka
+    container_name: kafka
+    restart: "no"
     ports:
       - "2181:2181"
+      - "9093:9093"
     environment:
-      - ALLOW_ANONYMOUS_LOGIN=yes
-
-  kafka:
-    image: bitnami/kafka:latest
-    ports:
-      - "9092:9092"
-    environment:
-      - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
-      - ALLOW_PLAINTEXT_LISTENER=yes
-    depends_on:
-      - zookeeper
-
+      KAFKA_LISTENERS: "INTERNAL://:29092,EXTERNAL://:9093"
+      KAFKA_ADVERTISED_LISTENERS: "INTERNAL://kafka:29092,EXTERNAL://localhost:9093"
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: "INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT"
+      KAFKA_INTER_BROKER_LISTENER_NAME: "INTERNAL"
+      KAFKA_ZOOKEEPER_SESSION_TIMEOUT: "6000"
+      KAFKA_RESTART_ATTEMPTS: "10"
+      KAFKA_RESTART_DELAY: "5"
+      ZOOKEEPER_AUTOPURGE_PURGE_INTERVAL: "0"
+    healthcheck:
+      test: nc -z localhost 29092 || exit
+      interval: 10s
+      timeout: 5s
+      retries: 15
+    networks:
+      - my_network
   microservice1:
+    container_name: microservice1
     build: ./microservice1
     ports:
       - "8081:8000"
-    environment:
-      - KAFKA_BROKER=kafka:9092
+    volumes:
+      - ./microservice1/app:/code/app 
+    networks:
+      - my_network
     depends_on:
       - kafka
 
   microservice2:
+    container_name: microservice2
     build: ./microservice2
     ports:
       - "8082:7999"
-    environment:
-      - KAFKA_BROKER=kafka:9092
+    volumes:
+      - ./microservice2/app:/code/app 
+    networks:
+      - my_network
     depends_on:
       - kafka
-  
-  database:
-    image: postgres:15
-    ports:
-      - "5432:5432"
-    environment:
-      - "POSTGRES_HOST_AUTH_METHOD=trust"
+
+networks: 
+  my_network: 
+    external: true
