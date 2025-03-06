@@ -1,11 +1,16 @@
+# main.py (FastAPI Consumer)
 from fastapi import FastAPI
+from contextlib import asynccontextmanager
+import asyncio
 
+from .kafka_consumer import consume_messages
 
-app = FastAPI(
-    title="Microservice 2",
-    description="This is the consumer fastapi microservice",
-)
+app = FastAPI()
 
-@app.get("/")
-def read_root():
-    return {"Hello": "World"}
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    consuming_task = asyncio.create_task(consume_messages())
+    yield
+    consuming_task.cancel()
+
+app.router.lifespan_context = lifespan
