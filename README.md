@@ -1,8 +1,8 @@
 # fastapi-kafka-microservice
 ## Getting Started
 1- [Overview](#Overview)\
-2- [Project Structure](#Project Structure)\
-3- [Setup Instructions](#Setup Instructions) 
+2- [Project Structure](#Project_Structure)\
+3- [Setup Instructions](#Setup_Instructions) 
 
 ## Overview
 
@@ -17,7 +17,7 @@ This project demonstrates how to build two FastAPI microservices that communicat
  <img src="https://skillicons.dev/icons?i=kafka"/>
 </div>
 
-## Project Structure
+## Project_Structure
 
 ```
 root/
@@ -40,7 +40,7 @@ root/
 ├── docker-compose.yml
 ```
 
-## Setup Instructions
+## Setup_Instructions
 
 #### 1. Requirements : 
 docker & docker-compose installed on your machine 💻
