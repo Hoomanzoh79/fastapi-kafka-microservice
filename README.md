@@ -1,8 +1,8 @@
 # fastapi-kafka-microservice
 ## Getting Started
 1- [Overview](#Overview)\
-2- [Project Structure](#project_structure) \
-3- [Setup Instructions](#setup_instructions) 
+2- [Project Structure](#Project Structure)\
+3- [Setup Instructions](#Setup Instructions) 
 
 ## Overview
 
